@@ -30,7 +30,7 @@ services:
       - SYCL_CACHE_PERSISTENT=1
       - SYCL_CACHE_DIR=/models/sycl_cache
       - SYCL_DEVICE_ALLOWLIST=BackendName:level_zero
-    command: build/bin/whisper-server -l ${LANG} -bs ${BEAM_SIZE} -m
+    command: build/bin/whisper-server -l ${LANGUAGE} -bs ${BEAM_SIZE} -m
       /models/ggml-$MODEL.bin --host 0.0.0.0 --port 8910 --suppress-nst --prompt
       "$PROMPT"
   wyoming-api:
