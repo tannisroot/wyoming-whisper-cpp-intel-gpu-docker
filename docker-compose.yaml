@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
     depends_on:
       whisper-cpp:
-        condition: service_healthy
+        condition: service_started
     security_opt:
       - no-new-privileges:true
     # Change user to the one that will run the container
