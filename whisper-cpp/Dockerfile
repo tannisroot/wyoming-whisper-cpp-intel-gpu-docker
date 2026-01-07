@@ -18,9 +18,3 @@ RUN \
     && cmake --build build -j --config Release
 
 WORKDIR /whisper.cpp
-
-HEALTHCHECK --start-period=10m \
-    CMD echo '{ "type": "describe" }' \
-        | nc -w 1 localhost 8910 \
-        | grep -iq "whisper.cpp" \
-        || exit 1

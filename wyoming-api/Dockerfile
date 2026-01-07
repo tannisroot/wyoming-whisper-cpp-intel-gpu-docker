@@ -16,9 +16,3 @@ RUN \
     && script/setup
 
 WORKDIR /wyoming-whisper-api-client
-
-HEALTHCHECK --start-period=10m \
-    CMD echo '{ "type": "describe" }' \
-        | nc -w 1 localhost 7891 \
-        | grep -iq "whisper-cpp" \
-        || exit 1
