@@ -16,13 +16,13 @@ services:
       # You can get the id number by running: getent group render
       - "107"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges
     volumes:
       - type: volume
         source: models
         target: /models
     networks:
-      whisper: {}
+      whisper:
     hostname: whispercpp
     devices:
       - /dev/dri:/dev/dri
@@ -30,7 +30,15 @@ services:
       - SYCL_CACHE_PERSISTENT=1
       - SYCL_CACHE_DIR=/models/sycl_cache
       - SYCL_DEVICE_ALLOWLIST=BackendName:level_zero
-    command: build/bin/whisper-server -l ${WHISPER_LANG} -bs ${WHISPER_BEAM_SIZE} -m /models/ggml-${WHISPER_MODEL}.bin --host 0.0.0.0 --port 8910 --suppress-nst --prompt "${WHISPER_PROMPT}"
+    command: |
+      build/bin/whisper-server
+      -l ${WHISPER_LANG}
+      -bs ${WHISPER_BEAM_SIZE}
+      -m /models/ggml-${WHISPER_MODEL}.bin
+      --host 0.0.0.0
+      --port 8910
+      --suppress-nst
+      --prompt "${WHISPER_PROMPT}"
   wyoming-api:
     build:
       context: ./wyoming-api
@@ -41,17 +49,17 @@ services:
       whisper-cpp:
         condition: service_started
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges
     # Change user to the one that will run the container
     user: 1000:1000
     networks:
-      whisper: {}
+      whisper:
     ports:
       - 7891:7891
     command: script/run --uri tcp://0.0.0.0:7891 --api http://whispercpp:8910/inference
   model-download:
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges
     user: 1000:1000
     build:
       context: ./model-download
@@ -63,10 +71,10 @@ services:
         target: /models
     restart: no
     networks:
-      whisper: {}
+      whisper:
     environment:
       - WHISPER_MODEL=${WHISPER_MODEL}
 networks:
-  whisper: {}
+  whisper:
 volumes:
   models:
