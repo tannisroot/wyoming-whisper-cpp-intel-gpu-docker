@@ -4,7 +4,6 @@ services:
       context: ./whisper-cpp
       args:
         - WHISPER_CPP_VERSION=${WHISPER_CPP_VERSION}
-        - BUILD_FROM=intel/oneapi:2025.3.1-0-devel-ubuntu24.04
     restart: unless-stopped
     depends_on:
       model-download:
@@ -42,8 +41,6 @@ services:
   wyoming-api:
     build:
       context: ./wyoming-api
-      args:
-        - BUILD_FROM=debian:bookworm-slim
     restart: unless-stopped
     depends_on:
       whisper-cpp:

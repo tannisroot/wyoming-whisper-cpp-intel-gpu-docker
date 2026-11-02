@@ -1,5 +1,4 @@
-ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM intel/oneapi:2025.3.1-0-devel-ubuntu24.04
 
 ARG WHISPER_CPP_VERSION
 
