@@ -3,7 +3,7 @@ services:
     build:
       context: ./whisper-cpp
       args:
-        - WHISPER_CPP_VERSION=1.7.4
+        - WHISPER_CPP_VERSION=${WHISPER_CPP_VERSION}
         - BUILD_FROM=intel/oneapi:2025.0.1-0-devel-ubuntu24.04
     restart: unless-stopped
     depends_on:
