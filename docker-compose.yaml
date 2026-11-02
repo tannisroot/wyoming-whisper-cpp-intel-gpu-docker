@@ -55,6 +55,8 @@ services:
     user: 1000:1000
     build:
       context: ./model-download
+      args:
+        - WHISPER_CPP_VERSION=${WHISPER_CPP_VERSION}
     volumes:
       - type: volume
         source: models
@@ -63,7 +65,7 @@ services:
     networks:
       whisper: {}
     environment:
-      - MODEL=${WHISPER_MODEL}
+      - WHISPER_MODEL=${WHISPER_MODEL}
 networks:
   whisper: {}
 volumes:

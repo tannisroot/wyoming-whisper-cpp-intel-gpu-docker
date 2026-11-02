@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-WORKDIR /
+ARG WHISPER_CPP_VERSION
 
 RUN \
     apk update \
@@ -8,8 +8,8 @@ RUN \
         bash \
         wget
 
-COPY run.sh /
+RUN \
+    wget https://raw.githubusercontent.com/ggml-org/whisper.cpp/refs/tags/v${WHISPER_CPP_VERSION}/models/download-ggml-model.sh \
+    && chmod +x download-ggml-model.sh
 
-RUN chmod +x /run.sh
-
-CMD /run.sh
+CMD ["/bin/sh", "-c", "./download-ggml-model.sh ${WHISPER_MODEL} /models"]
