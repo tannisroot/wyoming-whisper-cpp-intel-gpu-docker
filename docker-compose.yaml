@@ -31,8 +31,11 @@ services:
       - /dev/dri/renderD128:/dev/dri/renderD128
       - /dev/dri/card0:/dev/dri/card0
     environment:
-      - SYCL_CACHE_PERSISTENT=1
-      - SYCL_CACHE_DIR=/models/sycl_cache
+      # Set SYCL_CACHE_PERSISTENT=1 and set the cache directory once a 
+      # resolution to the sycl runtime bug has been fixed.
+      # See https://github.com/ggml-org/llama.cpp/issues/20368
+      - SYCL_CACHE_PERSISTENT=0
+      # - SYCL_CACHE_DIR=/models/sycl_cache
       - SYCL_DEVICE_ALLOWLIST=BackendName:level_zero
     command: |
       build/bin/whisper-server
