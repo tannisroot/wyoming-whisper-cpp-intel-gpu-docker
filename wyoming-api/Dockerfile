@@ -11,7 +11,7 @@ RUN \
         python3-venv
 
 RUN \
-    git clone https://github.com/ser/wyoming-whisper-api-client.git wyoming-whisper-api-client \
+    git clone --depth 1 https://github.com/ser/wyoming-whisper-api-client.git wyoming-whisper-api-client \
     && cd wyoming-whisper-api-client \
     && script/setup
 

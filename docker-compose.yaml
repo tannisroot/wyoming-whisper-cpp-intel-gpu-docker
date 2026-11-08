@@ -3,8 +3,7 @@ services:
     build:
       context: ./whisper-cpp
       args:
-        - WHISPER_CPP_VERSION=1.7.4
-        - BUILD_FROM=intel/oneapi:2025.0.1-0-devel-ubuntu24.04
+        - WHISPER_CPP_VERSION=${WHISPER_CPP_VERSION}
     restart: unless-stopped
     depends_on:
       model-download:
@@ -16,57 +15,72 @@ services:
       # You can get the id number by running: getent group render
       - "107"
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges
     volumes:
-      - type: bind
-      # Please change /path/to/models to a real directory the user the service is running as can read and write to
-      # Make sure to do the same for model-download service too
-        source: /path/to/models
+      - type: volume
+        source: models
         target: /models
     networks:
-      whisper: {}
+      whisper:
     hostname: whispercpp
     devices:
-      - /dev/dri:/dev/dri
+      # Update the following with your host's render device (GPU) path.
+      # You can find the path by running: ls -l /dev/dri
+      # If you have multiple render devices, you may require additional lines
+      # for each device.
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/card0:/dev/dri/card0
     environment:
-      - SYCL_CACHE_PERSISTENT=1
-      - SYCL_CACHE_DIR=/models/sycl_cache
+      # Set SYCL_CACHE_PERSISTENT=1 and set the cache directory once a 
+      # resolution to the sycl runtime bug has been fixed.
+      # See https://github.com/ggml-org/llama.cpp/issues/20368
+      - SYCL_CACHE_PERSISTENT=0
+      # - SYCL_CACHE_DIR=/models/sycl_cache
       - SYCL_DEVICE_ALLOWLIST=BackendName:level_zero
-    command: build/bin/whisper-server -l ${WHISPER_LANG} -bs ${WHISPER_BEAM_SIZE} -m /models/ggml-${WHISPER_MODEL}.bin --host 0.0.0.0 --port 8910 --suppress-nst --prompt "${WHISPER_PROMPT}"
+    command: |
+      build/bin/whisper-server
+      -t ${WHISPER_CPP_THREADS}
+      -l ${WHISPER_LANG}
+      -bs ${WHISPER_BEAM_SIZE}
+      -m /models/ggml-${WHISPER_MODEL}.bin
+      --host 0.0.0.0
+      --port 8910
+      --suppress-nst
+      --prompt "${WHISPER_PROMPT}"
   wyoming-api:
     build:
       context: ./wyoming-api
-      args:
-        - BUILD_FROM=debian:bookworm-slim
     restart: unless-stopped
     depends_on:
       whisper-cpp:
         condition: service_started
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges
     # Change user to the one that will run the container
     user: 1000:1000
     networks:
-      whisper: {}
+      whisper:
     ports:
       - 7891:7891
     command: script/run --uri tcp://0.0.0.0:7891 --api http://whispercpp:8910/inference
   model-download:
     security_opt:
-      - no-new-privileges:true
+      - no-new-privileges
     user: 1000:1000
     build:
       context: ./model-download
+      args:
+        - WHISPER_CPP_VERSION=${WHISPER_CPP_VERSION}
     volumes:
-      - type: bind
-      # Please change /path/to/models to a real directory the user the service is running as can read and write to
-      # Make sure to do the same for whisper-cpp service too
-        source: /path/to/models
+      - type: volume
+        source: models
         target: /models
     restart: no
     networks:
-      whisper: {}
+      whisper:
     environment:
-      - MODEL=${WHISPER_MODEL}
+      - WHISPER_MODEL=${WHISPER_MODEL}
 networks:
-  whisper: {}
+  whisper:
+volumes:
+  models:
