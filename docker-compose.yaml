@@ -24,7 +24,12 @@ services:
       whisper:
     hostname: whispercpp
     devices:
-      - /dev/dri:/dev/dri
+      # Update the following with your host's render device (GPU) path.
+      # You can find the path by running: ls -l /dev/dri
+      # If you have multiple render devices, you may require additional lines
+      # for each device.
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/card0:/dev/dri/card0
     environment:
       - SYCL_CACHE_PERSISTENT=1
       - SYCL_CACHE_DIR=/models/sycl_cache
