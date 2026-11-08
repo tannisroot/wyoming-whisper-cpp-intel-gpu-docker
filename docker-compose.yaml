@@ -39,6 +39,7 @@ services:
       - SYCL_DEVICE_ALLOWLIST=BackendName:level_zero
     command: |
       build/bin/whisper-server
+      -t ${WHISPER_CPP_THREADS}
       -l ${WHISPER_LANG}
       -bs ${WHISPER_BEAM_SIZE}
       -m /models/ggml-${WHISPER_MODEL}.bin
